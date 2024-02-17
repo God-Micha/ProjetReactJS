@@ -5,7 +5,7 @@ import Canvas from "./components/canvas/Canvas";
 function App() {
   return (
       <div className="App">
-        <h1>Mon Place</h1>
+        <h1>Truc avec des pixels</h1>
         <Canvas />
       </div>
   );
