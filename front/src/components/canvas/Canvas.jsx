@@ -1,6 +1,7 @@
 import React, {useRef, useEffect} from 'react';
 
-const Canvas = () => {
+const Canvas = (props) => {
+    let {selectedColor} = props;
     const canvasRef = useRef(null);
     const canvasSize = 640;
     const squareSize = 10;
@@ -33,7 +34,7 @@ const Canvas = () => {
         const i = Math.floor(x / squareSize);
         const j = Math.floor(y / squareSize);
 
-        context.fillStyle = 'black';
+        context.fillStyle = selectedColor;
         context.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
     };
 
