@@ -1,4 +1,5 @@
 import React, {useRef, useEffect} from 'react';
+import axios from "axios";
 
 const Canvas = (props) => {
     let {selectedColor} = props;
@@ -24,11 +25,21 @@ const Canvas = (props) => {
      * puis on les convertit en coordonnées relatives au canvas, on calcule les coordonnées du pixel sur lequel on a cliqué, et enfin on dessine le pixel noir sur le canvas.
      * @param e
      */
-    const addPixel = (e) => {
+    const addPixel = async(e) => {
         const canvas = canvasRef.current;
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+        try {
+            await axios.post('http://localhost:3001/api/grid', {
+                x,
+                y,
+                color: selectedColor,
+            });
+            console.log('Pixel added');
+        } catch (e) {
+            console.error(e);
+        }
         const context = canvas.getContext('2d');
 
         const i = Math.floor(x / squareSize);
