@@ -1,4 +1,4 @@
-import Grid from '../models/grid';
+import Grid from '../models/chunk';
 
 export let batch = {};
 

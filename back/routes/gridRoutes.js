@@ -1,27 +1,77 @@
 import {processBatch, batch} from './batch';
-import {calculateGridId} from "../utils/utils";
 const express = require('express');
 const router = express.Router();
-const Grid = require('../models/grid');
-router.get('/:id', async (req, res) => {
-    try{
-        const grid = await Grid.findById(req.params.id);
-        res.json(grid);
+const Chunk = require('../models/Chunk');
+
+
+const CHUNK_WIDTH = 100;
+const CHUNK_HEIGHT = 100;
+router.get('/getChunk/:chunkX/:chunkY', async (req, res) => {
+    const chunkX = parseInt(req.params.chunkX, 10);
+    const chunkY = parseInt(req.params.chunkY, 10);
+
+    try {
+        let chunk = await Chunk.findOne({ 'coordinates.x': chunkX, 'coordinates.y': chunkY });
+
+        if (!chunk) {
+            const defaultPixels = Array.from({ length: CHUNK_HEIGHT }, () =>
+                Array.from({ length: CHUNK_WIDTH }, () => '#FFFFFF')
+            );
+            chunk = {
+                chunkId: `${chunkX}_${chunkY}`,
+                coordinates: { x: chunkX, y: chunkY },
+                pixels: defaultPixels,
+            };
+        }
+
+        res.json(chunk);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching chunk data' });
+    }
+});
+
+
+router.get('/metaDatas', async (req, res) => {
+    try {
+        const canvasWidth = 10000;
+        const canvasHeight = 10000;
+        const chunkWidth = CHUNK_WIDTH;
+        const chunkHeight = CHUNK_HEIGHT;
+        res.json({canvasWidth, canvasHeight, chunkWidth, chunkHeight});
     } catch (err) {
         res.json({message: err});
     }
 });
 
-router.post('/', (req, res) => {
-    const { x, y, color } = req.body;
-    const gridId = calculateGridId(x, y);
+router.post('/', async (req, res) => {
+    const {x, y, color} = req.body;
+    const chunkX = Math.floor(x / CHUNK_WIDTH);
+    const chunkY = Math.floor(y / CHUNK_HEIGHT);
 
-    if (!batch[gridId]) {
-        batch[gridId] = [];
+    //Calculate the position of the pixel in the chunk
+    const posX = x % CHUNK_WIDTH;
+    const posY = y % CHUNK_HEIGHT;
+
+    try {
+        let chunk = await Chunk.findOne({'coordinates.x': chunkX, 'coordinates.y': chunkY});
+        if (!chunk) {
+            let defaultPixels = Array.from({length: CHUNK_HEIGHT}, () => Array.from({length: CHUNK_WIDTH}, () => ({color: '#FFFFFF'})));
+            defaultPixels[posY][posX] = {color};
+            chunk = new Chunk({
+                chunkId: `${chunkX}_${chunkY}`,
+                coordinates: {x: chunkX, y: chunkY},
+                pixels: defaultPixels,
+            });
+        } else {
+            chunk.pixels[posY][posX] = {color};
+            chunk.updatedAt = new Date();
+        }
+        await chunk.save();
+        res.json({ message: 'Pixel updated successfully' });
+    } catch (err) {
+        res.status(400).json({message: err});
     }
-    batch[gridId].push({ x, y, color });
-
-    res.status(202).json({ message: "Mise à jour du pixel mise en file d'attente pour traitement par lots." });
 });
 
 router.patch('/:id', async (req, res) => {
@@ -34,7 +84,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-    try{
+    try {
         const removedGrid = await Grid.findByIdAndDelete(req.params.id);
         res.json(removedGrid);
     } catch (err) {
