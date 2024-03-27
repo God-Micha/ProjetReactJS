@@ -1,4 +1,3 @@
-import {processBatch, batch} from './batch';
 const express = require('express');
 const router = express.Router();
 const Chunk = require('../models/Chunk');
@@ -11,15 +10,15 @@ router.get('/getChunk/:chunkX/:chunkY', async (req, res) => {
     const chunkY = parseInt(req.params.chunkY, 10);
 
     try {
-        let chunk = await Chunk.findOne({ 'coordinates.x': chunkX, 'coordinates.y': chunkY });
+        let chunk = await Chunk.findOne({'coordinates.x': chunkX, 'coordinates.y': chunkY});
 
         if (!chunk) {
-            const defaultPixels = Array.from({ length: CHUNK_HEIGHT }, () =>
-                Array.from({ length: CHUNK_WIDTH }, () => '#FFFFFF')
+            const defaultPixels = Array.from({length: CHUNK_HEIGHT}, () =>
+                Array.from({length: CHUNK_WIDTH}, () => '#FFFFFF')
             );
             chunk = {
                 chunkId: `${chunkX}_${chunkY}`,
-                coordinates: { x: chunkX, y: chunkY },
+                coordinates: {x: chunkX, y: chunkY},
                 pixels: defaultPixels,
             };
         }
@@ -27,7 +26,7 @@ router.get('/getChunk/:chunkX/:chunkY', async (req, res) => {
         res.json(chunk);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error fetching chunk data' });
+        res.status(500).json({message: 'Error fetching chunk data'});
     }
 });
 
@@ -68,20 +67,38 @@ router.post('/', async (req, res) => {
             chunk.updatedAt = new Date();
         }
         await chunk.save();
-        res.json({ message: 'Pixel updated successfully' });
+        res.json({message: 'Pixel updated successfully'});
     } catch (err) {
         res.status(400).json({message: err});
     }
 });
 
-router.patch('/:id', async (req, res) => {
-    const {x, y, color} = req.body;
-    if (!batch[req.params.id]) {
-        batch[req.params.id] = [];
+router.patch('/updatePixel', async (req, res) => {
+    const { x, y, color } = req.body;
+    const chunkX = Math.floor(x / CHUNK_WIDTH);
+    const chunkY = Math.floor(y / CHUNK_HEIGHT);
+    const posX = x % CHUNK_WIDTH;
+    const posY = y % CHUNK_HEIGHT;
+
+    try {
+        let chunk = await Chunk.findOne({ 'coordinates.x': chunkX, 'coordinates.y': chunkY });
+
+        if (!chunk) {
+            return res.status(404).json({ message: 'Chunk not found' });
+        }
+        chunk.pixels[posY][posX] = { color };
+        chunk.updatedAt = new Date();
+
+        await chunk.save();
+
+        res.json({ message: 'Pixel updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating pixel' });
     }
-    batch[req.params.id].push({x, y, color});
-    res.status(204).end();
 });
+
+
 
 router.delete('/:id', async (req, res) => {
     try {

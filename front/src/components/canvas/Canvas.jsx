@@ -8,6 +8,7 @@ const Canvas = (props) => {
     const squareSize = 10;
     const nbPixels = canvasSize / squareSize;
 
+    let CHUNK_WIDTH, CHUNK_HEIGHT;
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
@@ -30,24 +31,38 @@ const Canvas = (props) => {
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        try {
-            await axios.post('http://localhost:3001/api/grid', {
-                x,
-                y,
-                color: selectedColor,
-            });
-            console.log('Pixel added');
-        } catch (e) {
-            console.error(e);
-        }
         const context = canvas.getContext('2d');
-
         const i = Math.floor(x / squareSize);
         const j = Math.floor(y / squareSize);
+        await updateOrCreateChunk(i, j, selectedColor);
 
         context.fillStyle = selectedColor;
         context.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
     };
+
+    const updateOrCreateChunk = async (x, y, color) => {
+        try {
+            debugger
+            const response = await axios.patch(`http://localhost:3001/api/chunks}`, {
+                x: x,
+                y: y,
+                color: color,
+            }, {
+                validateStatus: function (status) {
+                    return status === 404 || status === 200;
+                }
+            });
+            if(response.status === 404) {
+                const postResponse = await axios.post('http://localhost:3001/api/chunks', {
+                    x: x,
+                    y: y,
+                    color: color,
+                });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     return (
         <canvas
