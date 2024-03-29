@@ -49,8 +49,6 @@ router.post('/', async (req, res) => {
     const {x, y, color} = req.body;
     const chunkX = Math.floor((x) / CHUNK_WIDTH);
     const chunkY = Math.floor((y) / CHUNK_HEIGHT);
-
-    //Calculate the position of the pixel in the chunk
     const posX = x % CHUNK_WIDTH;
     const posY = y % CHUNK_HEIGHT;
 
