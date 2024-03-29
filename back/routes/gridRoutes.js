@@ -3,8 +3,9 @@ const router = express.Router();
 const Chunk = require('../models/Chunk');
 
 
-const CHUNK_WIDTH = 100;
-const CHUNK_HEIGHT = 100;
+const CHUNK_WIDTH = 10;
+const CHUNK_HEIGHT = 10;
+const SQUARE_SIZE = 10;
 router.get('/getChunk/:chunkX/:chunkY', async (req, res) => {
     const chunkX = parseInt(req.params.chunkX, 10);
     const chunkY = parseInt(req.params.chunkY, 10);
@@ -14,7 +15,7 @@ router.get('/getChunk/:chunkX/:chunkY', async (req, res) => {
 
         if (!chunk) {
             const defaultPixels = Array.from({length: CHUNK_HEIGHT}, () =>
-                Array.from({length: CHUNK_WIDTH}, () => '#FFFFFF')
+                Array.from({ length: CHUNK_WIDTH }, () => ({ color: '#FFFFFF' }))
             );
             chunk = {
                 chunkId: `${chunkX}_${chunkY}`,
@@ -33,11 +34,12 @@ router.get('/getChunk/:chunkX/:chunkY', async (req, res) => {
 
 router.get('/metaDatas', async (req, res) => {
     try {
-        const canvasWidth = 10000;
-        const canvasHeight = 10000;
+        const canvasWidth = 100;
+        const canvasHeight = 100;
         const chunkWidth = CHUNK_WIDTH;
         const chunkHeight = CHUNK_HEIGHT;
-        res.json({canvasWidth, canvasHeight, chunkWidth, chunkHeight});
+        const squareSize = SQUARE_SIZE;
+        res.json({canvasWidth, canvasHeight, chunkWidth, chunkHeight, squareSize});
     } catch (err) {
         res.json({message: err});
     }
@@ -45,8 +47,8 @@ router.get('/metaDatas', async (req, res) => {
 
 router.post('/', async (req, res) => {
     const {x, y, color} = req.body;
-    const chunkX = Math.floor(x / CHUNK_WIDTH);
-    const chunkY = Math.floor(y / CHUNK_HEIGHT);
+    const chunkX = Math.floor((x) / CHUNK_WIDTH);
+    const chunkY = Math.floor((y) / CHUNK_HEIGHT);
 
     //Calculate the position of the pixel in the chunk
     const posX = x % CHUNK_WIDTH;

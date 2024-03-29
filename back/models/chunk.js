@@ -6,7 +6,7 @@ const pixelSchema = new mongoose.Schema({
         required: true,
         validate: /^#[0-9A-F]{6}$/i,
     }
-});
+}, { _id: false });
 
 const chunkSchema = new mongoose.Schema({
     chunkId: {

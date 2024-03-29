@@ -1,26 +1,62 @@
-import React, {useRef, useEffect} from 'react';
+import React, { useRef, useEffect } from 'react';
 import axios from "axios";
 
-const Canvas = (props) => {
-    let {selectedColor} = props;
+const Canvas = ({ metaData, selectedColor }) => {
     const canvasRef = useRef(null);
-    const canvasSize = 640;
-    const squareSize = 10;
-    const nbPixels = canvasSize / squareSize;
+    const squareSize = metaData? metaData.squareSize : 10; // Définir la taille de chaque pixel
 
-    let CHUNK_WIDTH, CHUNK_HEIGHT;
     useEffect(() => {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-        // Initialisation du canvas avec une grille de pixels blancs
-        for (let i = 0; i < nbPixels; ++i) {
-            for (let j = 0; j < nbPixels; ++j) {
-                context.fillStyle = 'white';
-                context.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
-                context.strokeRect(i * squareSize, j * squareSize, squareSize, squareSize);
+        if (metaData) {
+            const canvas = canvasRef.current;
+            const context = canvas.getContext('2d');
+            canvas.width = metaData.canvasWidth * squareSize;
+            canvas.height = metaData.canvasHeight * squareSize;
+
+            let promises = [];
+
+            for (let x = 0; x < metaData.canvasWidth / metaData.chunkWidth; x++) {
+                for (let y = 0; y < metaData.canvasHeight / metaData.chunkHeight; y++) {
+                    promises.push(drawChunk(x, y, context, squareSize, metaData));
+                }
+            }
+
+            Promise.all(promises).then(() => {
+                drawGrid(context, metaData.canvasWidth, metaData.canvasHeight, squareSize);
+            });
+        }
+    }, [metaData]);
+
+    const drawChunk = async (chunkX, chunkY, context, squareSize, metaData) => {
+        try {
+            const response = await axios.get(`http://localhost:3001/api/chunks/getChunk/${chunkX}/${chunkY}`);
+            const chunkData = response.data;
+            chunkData.pixels.forEach((row, y) => {
+                row.forEach((pixel, x) => {
+                    if (pixel.color !== "#FFFFFF"){
+                        console.log(pixel.color);
+                    }
+                    context.fillStyle = pixel.color;
+                    context.fillRect(
+                        (chunkX * metaData.chunkWidth + x) * squareSize,
+                        (chunkY * metaData.chunkHeight + y) * squareSize,
+                        squareSize,
+                        squareSize);
+                });
+            });
+        } catch (error) {
+            console.error(`Erreur lors du chargement du chunk (${chunkX},${chunkY}):`, error);
+        }
+    };
+
+    const drawGrid = (context, canvasWidth, canvasHeight, squareSize) => {
+        context.strokeStyle = '#CCCCCC';
+        for (let x = 0; x <= canvasWidth * squareSize; x += squareSize) {
+            for (let y = 0; y <= canvasHeight * squareSize; y += squareSize) {
+                context.strokeRect(x, y, squareSize, squareSize);
             }
         }
-    }, []);
+    };
+
     /**
      * Ajoute un pixel noir sur le canvas en fonction de la position du clic, on récupère d'abord les coordonnées du clic sur le viewport,
      * puis on les convertit en coordonnées relatives au canvas, on calcule les coordonnées du pixel sur lequel on a cliqué, et enfin on dessine le pixel noir sur le canvas.
@@ -42,7 +78,6 @@ const Canvas = (props) => {
 
     const updateOrCreateChunk = async (x, y, color) => {
         try {
-            debugger
             const response = await axios.patch(`http://localhost:3001/api/chunks}`, {
                 x: x,
                 y: y,
@@ -67,10 +102,10 @@ const Canvas = (props) => {
     return (
         <canvas
             ref={canvasRef}
-            width={canvasSize}
-            height={canvasSize}
+            width={metaData ? metaData.canvasWidth*squareSize * squareSize : 640} // Fallback si metaData n'est pas encore chargé
+            height={metaData ? metaData.canvasHeight * squareSize : 640} // Fallback si metaData n'est pas encore chargé
             onClick={addPixel}
-            style={{border: '1px solid black'}}
+            style={{ border: '1px solid black' }}
         />
     );
 };
