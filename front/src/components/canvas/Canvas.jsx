@@ -2,16 +2,22 @@ import React, { useRef, useEffect } from 'react';
 import axios from "axios";
 import './Canvas.css';
 import socket from 'socket.io-client'
-const io = socket('http://localhost:3001');
+import {json} from "react-router-dom";
+const io = socket('ws://localhost:3001');
 
 const Canvas = ({ metaData, selectedColor }) => {
     const canvasRef = useRef(null);
     const squareSize = metaData? metaData.squareSize : 10; // Définir la taille de chaque pixel
 
-    io.listeners('chunk', (x,y) => {
-        console.log(`chunk ${x} ${y} updated`);
+    io.on('update_chunk', (data) => {
+        const [x, y] = data.coordinates;
+        console.log(`chunk ${x} ${y} has been updated`);
         drawChunk(x, y, canvasRef.current.getContext('2d'), squareSize, metaData)
-            .then(r => console.log('chunk updated'));
+            .then(() => console.log('chunk updated'));
+    });
+
+    io.on('connect', () => {
+        console.log('Connected to server');
     });
 
     useEffect(() => {
@@ -81,7 +87,9 @@ const Canvas = ({ metaData, selectedColor }) => {
         const j = Math.floor(y / squareSize);
         await updateOrCreateChunk(i, j, selectedColor);
 
-        io.emit('chunk', i,j);
+        const chunk_coordinates = [i, j];
+        console.log(chunk_coordinates);
+        io.emit('update_chunk', { coordinates: chunk_coordinates });
 
         context.fillStyle = selectedColor;
         context.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
@@ -89,7 +97,7 @@ const Canvas = ({ metaData, selectedColor }) => {
 
     const updateOrCreateChunk = async (x, y, color) => {
         try {
-            const response = await axios.patch(`http://localhost:3001/api/chunks}`, {
+            const response = await axios.patch(`http://localhost:3001/api/chunks`, {
                 x: x,
                 y: y,
                 color: color,
@@ -104,6 +112,7 @@ const Canvas = ({ metaData, selectedColor }) => {
                     y: y,
                     color: color,
                 });
+                console.log(postResponse.data.message);
             }
         } catch (e) {
             console.error(e);
