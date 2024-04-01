@@ -1,9 +1,17 @@
 import React, { useRef, useEffect } from 'react';
 import axios from "axios";
+import socket from 'socket.io-client'
+const io = socket('http://localhost:3001');
 
 const Canvas = ({ metaData, selectedColor }) => {
     const canvasRef = useRef(null);
     const squareSize = metaData? metaData.squareSize : 10; // Définir la taille de chaque pixel
+
+    io.listeners('chunk', (x,y) => {
+        console.log(`chunk ${x} ${y} updated`);
+        drawChunk(x, y, canvasRef.current.getContext('2d'), squareSize, metaData)
+            .then(r => console.log('chunk updated'));
+    });
 
     useEffect(() => {
         if (metaData) {
@@ -71,6 +79,8 @@ const Canvas = ({ metaData, selectedColor }) => {
         const i = Math.floor(x / squareSize);
         const j = Math.floor(y / squareSize);
         await updateOrCreateChunk(i, j, selectedColor);
+
+        io.emit('chunk', i,j);
 
         context.fillStyle = selectedColor;
         context.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
