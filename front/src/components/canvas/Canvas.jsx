@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import axios from "axios";
+import './Canvas.css';
 import socket from 'socket.io-client'
 const io = socket('http://localhost:3001');
 
@@ -110,13 +111,15 @@ const Canvas = ({ metaData, selectedColor }) => {
     }
 
     return (
-        <canvas
-            ref={canvasRef}
-            width={metaData ? metaData.canvasWidth*squareSize * squareSize : 640} // Fallback si metaData n'est pas encore chargé
-            height={metaData ? metaData.canvasHeight * squareSize : 640} // Fallback si metaData n'est pas encore chargé
-            onClick={addPixel}
-            style={{ border: '1px solid black' }}
-        />
+        <div className="canvasContainer">
+            <canvas
+                ref={canvasRef}
+                width={metaData ? metaData.canvasWidth*squareSize * squareSize : 640} // Fallback si metaData n'est pas encore chargé
+                height={metaData ? metaData.canvasHeight * squareSize : 640} // Fallback si metaData n'est pas encore chargé
+                onClick={addPixel}
+                style={{ border: '1px solid black' }}
+            />
+        </div>
     );
 };
 

@@ -21,7 +21,10 @@ mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopolo
     .catch((err) => {console.log('Error connecting to MongoDB', err)});
 
 const gridRoutes = require('./routes/gridRoutes');
+const authRoutes = require('./routes/authRoute');
 app.use('/api/chunks', gridRoutes);
+app.use('/api/auth', authRoutes);
+
 
 io.on('connection', (socket) => {
     onlineUsers++
