@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import axios from "axios";
+import './Canvas.css';
 
 const Canvas = ({ metaData, selectedColor }) => {
     const canvasRef = useRef(null);
@@ -100,13 +101,15 @@ const Canvas = ({ metaData, selectedColor }) => {
     }
 
     return (
-        <canvas
-            ref={canvasRef}
-            width={metaData ? metaData.canvasWidth*squareSize * squareSize : 640} // Fallback si metaData n'est pas encore chargé
-            height={metaData ? metaData.canvasHeight * squareSize : 640} // Fallback si metaData n'est pas encore chargé
-            onClick={addPixel}
-            style={{ border: '1px solid black' }}
-        />
+        <div className="canvasContainer">
+            <canvas
+                ref={canvasRef}
+                width={metaData ? metaData.canvasWidth*squareSize * squareSize : 640} // Fallback si metaData n'est pas encore chargé
+                height={metaData ? metaData.canvasHeight * squareSize : 640} // Fallback si metaData n'est pas encore chargé
+                onClick={addPixel}
+                style={{ border: '1px solid black' }}
+            />
+        </div>
     );
 };
 

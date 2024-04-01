@@ -1,34 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Canvas from "./components/canvas/Canvas";
-import {useState} from "react";
 import ColorPicker from "./components/colorPicker/ColorPicker";
-import axios from "axios";
+import SignUp from "./components/auth/SignUp";
+import LogIn from "./components/auth/LogIn";
+import PixelBoard from "./components/pixelBoard/PixelBoard";
 
 function App() {
-    const [selectedColor, setSelectedColor] = useState('#000000');
-    const [metaData, setMetaData] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const handleLogIn = (isLoggedIn) => {
+        setIsLoggedIn(isLoggedIn);
+    }
 
-    const loadCanvasMetaData = async () => {
-        try {
-            const response = await axios.get('http://localhost:3001/api/chunks/metaDatas');
-            setMetaData(response.data);
-        } catch (error) {
-            console.error("Erreur lors du chargement des métadonnées du canvas :", error);
-        }
-    };
-
-    const handleColorChange = (color) => {
-        setSelectedColor(color);
-    };
-  return (
-      <div className="App">
-        <h1>Truc avec des pixels</h1>
-          <button onClick={loadCanvasMetaData}>Charger Canvas</button>
-          <ColorPicker onColorChange={handleColorChange} />
-          <Canvas metaData={metaData} selectedColor={selectedColor} />
-      </div>
-  );
+    return (
+        <Router>
+            <div className="App">
+                <Routes>
+                    <Route path="/signup" element={!isLoggedIn ? <SignUp onLoginSuccess={() => handleLogIn(true)} /> : <Navigate replace to="/canvas" />} />
+                    <Route path="/login" element={!isLoggedIn ? <LogIn onLoginSuccess={() => handleLogIn(true)} /> : <Navigate replace to="/canvas" />} />
+                    <Route path="/canvas" element={isLoggedIn ? (
+                        <PixelBoard/>
+                    ) : <Navigate replace to="/login" />} />
+                    <Route path="/" element={<Navigate replace to="/login" />} />
+                </Routes>
+            </div>
+        </Router>
+    );
 }
 
 export default App;
