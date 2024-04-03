@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Canvas from "./components/canvas/Canvas";
 import ColorPicker from "./components/colorPicker/ColorPicker";
@@ -8,6 +8,13 @@ import PixelBoard from "./components/pixelBoard/PixelBoard";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsLoggedIn(true);
+        }
+    }, []);
     const handleLogIn = (isLoggedIn) => {
         setIsLoggedIn(isLoggedIn);
     }
