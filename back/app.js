@@ -45,11 +45,11 @@ app.use('/api/auth', authRoutes);
 io.on('connection', (socket) => {
     onlineUsers++
     console.log(`Online users: ${onlineUsers}`)
-    io.emit('onlineUsers', onlineUsers)
+    socket.broadcast.emit('onlineUsers', onlineUsers)
 
     socket.on('disconnect', function () {
         onlineUsers--
-        io.emit('onlineUsers', onlineUsers)
+        socket.broadcast.emit('onlineUsers', onlineUsers)
         console.log(`Online users: ${onlineUsers}`)
     })
 

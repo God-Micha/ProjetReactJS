@@ -1,24 +1,62 @@
-import React, { useRef, useEffect } from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import axios from "axios";
 import './Canvas.css';
 import socket from 'socket.io-client'
 import {json} from "react-router-dom";
-const io = socket('ws://localhost:3001');
+const io = socket('ws://localhost:3001', {
+    autoConnect: false,
+    transports: ['websocket'],
+    reconnection: false
+});
 
 const Canvas = ({ metaData, selectedColor }) => {
+    const [isConnected, setIsConnected] = useState(io.connected);
     const canvasRef = useRef(null);
     const squareSize = metaData? metaData.squareSize : 10; // Définir la taille de chaque pixel
+    const canvasWidth = metaData? metaData.canvasWidth : 10;
+    const canvasHeight = metaData? metaData.canvasHeight : 10;
 
-    io.on('update_chunk', (data) => {
-        const [x, y] = data.coordinates;
-        console.log(`chunk ${x} ${y} has been updated`);
-        drawChunk(x, y, canvasRef.current.getContext('2d'), squareSize, metaData)
-            .then(() => console.log('chunk updated'));
-    });
+    useEffect(() => {
+        const handleUpdateChunk = (data) => {
+            if(!metaData) {
+                console.error('No metadata for handling chunk update');
+                return;
+            }
+            const [x, y] = data.coordinates;
+            const canvas = canvasRef.current;
+            const context = canvas.current.getContext('2d');
+            console.log(`chunk ${x} ${y} has been updated`);
+            drawChunk(x, y, context, squareSize, metaData)
+                .then(() => console.log('chunk updated'));
+        };
 
-    io.on('connect', () => {
-        console.log('Connected to server');
-    });
+        const handleConnect = () => {
+            console.log('Connected to server');
+            setIsConnected(true);
+        };
+
+        const handleDisconnect = () => {
+            console.log('Disconnected from server');
+            setIsConnected(false);
+        };
+
+        const handleOnlineUsers = (onlineUsers) => {
+            console.log(`Online users: ${onlineUsers}`);
+        }
+
+        io.on('update_chunk', handleUpdateChunk);
+        io.on('connect', handleConnect);
+        io.on('onlineUsers', handleOnlineUsers);
+        io.on('disconnect', handleDisconnect);
+
+        return () => {
+            io.off('update_chunk', handleUpdateChunk);
+            io.off('connect', handleConnect);
+            io.off('onlineUsers', handleOnlineUsers);
+            io.on('disconnect', handleDisconnect);
+        };
+
+    }, []);
 
     useEffect(() => {
         if (metaData) {
@@ -39,6 +77,7 @@ const Canvas = ({ metaData, selectedColor }) => {
                 drawGrid(context, metaData.canvasWidth, metaData.canvasHeight, squareSize);
             });
         }
+        io.connect();
     }, [metaData]);
 
     const drawChunk = async (chunkX, chunkY, context, squareSize, metaData) => {
