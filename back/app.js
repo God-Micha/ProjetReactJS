@@ -18,6 +18,7 @@ const gridRoutes = require('./routes/gridRoutes');
 const authRoutes = require('./routes/authRoute');
 app.use('/api/chunks', gridRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/canvas', require('./routes/canvasRoute'));
 
 
 app.listen(port, () => {
