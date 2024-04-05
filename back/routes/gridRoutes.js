@@ -6,12 +6,13 @@ const Chunk = require('../models/Chunk');
 const CHUNK_WIDTH = 10;
 const CHUNK_HEIGHT = 10;
 const SQUARE_SIZE = 10;
-router.get('/getChunk/:chunkX/:chunkY', async (req, res) => {
+router.get('/getChunk/:chunkX/:chunkY/:canvasId', async (req, res) => {
     const chunkX = parseInt(req.params.chunkX, 10);
     const chunkY = parseInt(req.params.chunkY, 10);
+    const canvasId = req.params.canvasId;
 
     try {
-        let chunk = await Chunk.findOne({'coordinates.x': chunkX, 'coordinates.y': chunkY});
+        let chunk = await Chunk.findOne({'coordinates.x': chunkX, 'coordinates.y': chunkY, 'canvas': canvasId});
 
         if (!chunk) {
             const defaultPixels = Array.from({length: CHUNK_HEIGHT}, () =>
@@ -46,14 +47,14 @@ router.get('/metaDatas', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const {x, y, color} = req.body;
+    const {x, y, color, canvasId} = req.body;
     const chunkX = Math.floor((x) / CHUNK_WIDTH);
     const chunkY = Math.floor((y) / CHUNK_HEIGHT);
     const posX = x % CHUNK_WIDTH;
     const posY = y % CHUNK_HEIGHT;
 
     try {
-        let chunk = await Chunk.findOne({'coordinates.x': chunkX, 'coordinates.y': chunkY});
+        let chunk = await Chunk.findOne({'coordinates.x': chunkX, 'coordinates.y': chunkY, 'canvas': canvasId});
         if (!chunk) {
             let defaultPixels = Array.from({length: CHUNK_HEIGHT}, () => Array.from({length: CHUNK_WIDTH}, () => ({color: '#FFFFFF'})));
             defaultPixels[posY][posX] = {color};
@@ -61,6 +62,7 @@ router.post('/', async (req, res) => {
                 chunkId: `${chunkX}_${chunkY}`,
                 coordinates: {x: chunkX, y: chunkY},
                 pixels: defaultPixels,
+                canvas: canvasId
             });
         } else {
             chunk.pixels[posY][posX] = {color};
@@ -74,14 +76,14 @@ router.post('/', async (req, res) => {
 });
 
 router.patch('/updatePixel', async (req, res) => {
-    const { x, y, color } = req.body;
+    const { x, y, color, canvasId } = req.body;
     const chunkX = Math.floor(x / CHUNK_WIDTH);
     const chunkY = Math.floor(y / CHUNK_HEIGHT);
     const posX = x % CHUNK_WIDTH;
     const posY = y % CHUNK_HEIGHT;
 
     try {
-        let chunk = await Chunk.findOne({ 'coordinates.x': chunkX, 'coordinates.y': chunkY });
+        let chunk = await Chunk.findOne({ 'coordinates.x': chunkX, 'coordinates.y': chunkY, 'canvas': canvasId });
 
         if (!chunk) {
             return res.status(404).json({ message: 'Chunk not found' });
