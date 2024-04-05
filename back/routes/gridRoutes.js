@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Chunk = require('../models/Chunk');
+const isAuth = require('../middleware/isAuth');
+router.use(isAuth);
 
 
 const CHUNK_WIDTH = 10;
