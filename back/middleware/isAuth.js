@@ -1,18 +1,17 @@
-// src/axiosConfig.js
-import axios from 'axios';
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const setupAxiosConfig = () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+module.exports = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(403).json({ message: "Non autorisé." });
     }
 
-    axios.interceptors.response.use(response => response, error => {
-        if (error.response.status === 401) {
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
-    });
+    try {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decodedToken.userId;
+        next();
+    } catch (error) {
+        res.status(401).json({ message: "Token invalide ou expiré." });
+    }
 };
-
-export default setupAxiosConfig;
