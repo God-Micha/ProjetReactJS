@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
+
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -16,7 +17,7 @@ mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopolo
 
 const gridRoutes = require('./routes/gridRoutes');
 const authRoutes = require('./routes/authRoute');
-app.use('/api/chunks', gridRoutes);
+app.use('/api/chunks', gridRoutes, );
 app.use('/api/auth', authRoutes);
 app.use('/api/canvas', require('./routes/canvasRoute'));
 

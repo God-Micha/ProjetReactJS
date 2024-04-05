@@ -1,14 +1,17 @@
 // components/LogIn.jsx
 import React, {useState} from 'react';
 import {TextField, Button, Container, Typography, Box} from '@mui/material';
+import setupAxiosConfig from "../../axiosConfig";
+import {useAuth} from "../../AuthContext";
 
-const LogIn = (props) => {
+const LogIn = () => {
     const [credentials, setCredentials] = useState({
         email: '',
         password: '',
     });
     const [touched, setTouched] = useState({});
     const [errors, setErrors] = useState({});
+    const { logIn } = useAuth();
 
     const validateField = (name, value) => {
         if (!value.trim()) {
@@ -57,7 +60,8 @@ const LogIn = (props) => {
 
             const data = await response.json();
             localStorage.setItem('token', data.token);
-            props.onLoginSuccess();
+            logIn();
+            //props.onLoginSuccess();
         } catch (error) {
             console.error('Error:', error);
             alert(error.message);

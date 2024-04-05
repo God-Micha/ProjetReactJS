@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import setupAxiosConfig from "../../axiosConfig";
+import {useAuth} from "../../AuthContext";
 
-const SignUp = ({ onLoginSuccess }) => {
+const SignUp = () => {
     const [user, setUser] = useState({ email: '', password: '' });
     const [touched, setTouched] = useState({});
     const [errors, setErrors] = useState({});
+
+    const { logIn } = useAuth();
     const validateField = (name, value) => {
         if (!value.trim()) {
             setErrors(prev => ({ ...prev, [name]: 'Ce champ est requis.' }));
@@ -44,7 +48,7 @@ const SignUp = ({ onLoginSuccess }) => {
             const data = await response.json();
             console.log(data);
             localStorage.setItem('token', data.token);
-            onLoginSuccess();
+            logIn();
         } catch (error) {
             console.error('Error:', error);
             alert(error.message);

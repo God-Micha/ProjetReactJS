@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Canvas = require('../models/canvas');
+const isAuth = require('../middleware/isAuth');
+router.use(isAuth);
 
 router.post('/', async (req, res) => {
     try {
