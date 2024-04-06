@@ -1,8 +1,5 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Canvas from "./components/canvas/Canvas";
-import { useState } from "react";
-import ColorPicker from "./components/colorPicker/ColorPicker";
 import SignUp from "./components/auth/SignUp";
 import LogIn from "./components/auth/LogIn";
 import PixelBoard from "./components/pixelBoard/PixelBoard";
@@ -13,14 +10,16 @@ function App() {
     const handleLogIn = (isLoggedIn) => {
         setIsLoggedIn(isLoggedIn);
     }
-  const [selectedColor, setSelectedColor] = useState('#000000');
 
     return (
         <Router>
             <div className="App">
                 <Routes>
-                    <Route path="/signup" element={!isLoggedIn ? <SignUp onLoginSuccess={() => handleLogIn(true)} /> : <Navigate replace to="/canvas" />} />
-                    <Route path="/login" element={!isLoggedIn ? <LogIn onLoginSuccess={() => handleLogIn(true)} /> : <Navigate replace to="/canvas" />} />
+                    <Route path="/signup" element={!isLoggedIn ? <SignUp onLoginSuccess={() => handleLogIn(true)} /> : <Navigate replace to="/homepage" />} />
+                    <Route path="/login" element={!isLoggedIn ? <LogIn onLoginSuccess={() => handleLogIn(true)} /> : <Navigate replace to="/homepage" />} />
+                    <Route path="/homepage" element={isLoggedIn ? (
+                        <Homepage/>
+                    ) : <Navigate replace to="/login" />} />
                     <Route path="/canvas" element={isLoggedIn ? (
                         <PixelBoard/>
                     ) : <Navigate replace to="/login" />} />
