@@ -5,6 +5,8 @@ import ColorPicker from "./components/colorPicker/ColorPicker";
 import SignUp from "./components/auth/SignUp";
 import LogIn from "./components/auth/LogIn";
 import PixelBoard from "./components/pixelBoard/PixelBoard";
+import AdminPage from "./components/admin/AdminPage";
+import PixelBoardForm from "./components/admin/PixelBoardForm";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,6 +24,8 @@ function App() {
                         <PixelBoard/>
                     ) : <Navigate replace to="/login" />} />
                     <Route path="/" element={<Navigate replace to="/login" />} />
+                    <Route path="/admin" element={<AdminPage/>}/>
+                    <Route path="/admin/newpixelboard" element={<PixelBoardForm/>}/>
                 </Routes>
             </div>
         </Router>
