@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Chunk = require('../models/Chunk');
+const User = require('../models/User');
 const isAuth = require('../middleware/isAuth');
 router.use(isAuth);
 
@@ -49,7 +50,7 @@ router.get('/metaDatas', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const {x, y, color, canvasId} = req.body;
+    const {x, y, color, canvasId, userId} = req.body;
     const chunkX = Math.floor((x) / CHUNK_WIDTH);
     const chunkY = Math.floor((y) / CHUNK_HEIGHT);
     const posX = x % CHUNK_WIDTH;
@@ -57,6 +58,8 @@ router.post('/', async (req, res) => {
 
     try {
         let chunk = await Chunk.findOne({'coordinates.x': chunkX, 'coordinates.y': chunkY, 'canvas': canvasId});
+        let userInstance = await User.findById(userId);
+        userInstance.numberOfPixels += 1;
         if (!chunk) {
             let defaultPixels = Array.from({length: CHUNK_HEIGHT}, () => Array.from({length: CHUNK_WIDTH}, () => ({color: '#FFFFFF'})));
             defaultPixels[posY][posX] = {color};
