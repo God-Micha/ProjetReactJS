@@ -97,7 +97,7 @@ router.post('/', async (req, res) => {
             chunk.pixels[posY][posX] = color;
             chunk.updatedAt = new Date();
         }
-
+        userInstance.numberOfPixels += 1;
         await chunk.save();
         await userInstance.save();
 
