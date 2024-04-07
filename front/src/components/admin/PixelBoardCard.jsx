@@ -5,9 +5,7 @@ const PixelBoardCard = ({id,title,status,creationDate,endDate,size,adminUsername
     const navigate = useNavigate();
 
     const redirectToPixelboard = () => {
-        return () => {
-            navigate(`/canvas`, {state: {idCanvas: id}});
-        }
+        navigate(`/canvas`, {state: {idCanvas: id}});
     }
     return (
         <div className="pixel-board-card" key={id}>
