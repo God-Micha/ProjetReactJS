@@ -23,6 +23,11 @@ const chunkSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    canvas: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Canvas',
+        required: true
+    },
 });
 
 const Chunk = mongoose.model('Chunk', chunkSchema);

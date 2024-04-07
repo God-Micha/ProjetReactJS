@@ -1,28 +1,31 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Canvas from "./components/canvas/Canvas";
-import ColorPicker from "./components/colorPicker/ColorPicker";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
+import setupAxiosConfig from "./axiosConfig";
 import SignUp from "./components/auth/SignUp";
 import LogIn from "./components/auth/LogIn";
+import Board from "./components/board/Board";
 import PixelBoard from "./components/pixelBoard/PixelBoard";
 import AdminPage from "./components/admin/AdminPage";
 import PixelBoardForm from "./components/admin/PixelBoardForm";
+import Homepage from './components/homepage/Homepage';
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const handleLogIn = (isLoggedIn) => {
-        setIsLoggedIn(isLoggedIn);
-    }
+    const { isLoggedIn } = useAuth();
+
+    useEffect(() => {
+        setupAxiosConfig();
+    }, []);
 
     return (
         <Router>
             <div className="App">
                 <Routes>
-                    <Route path="/signup" element={!isLoggedIn ? <SignUp onLoginSuccess={() => handleLogIn(true)} /> : <Navigate replace to="/canvas" />} />
-                    <Route path="/login" element={!isLoggedIn ? <LogIn onLoginSuccess={() => handleLogIn(true)} /> : <Navigate replace to="/canvas" />} />
-                    <Route path="/canvas" element={isLoggedIn ? (
-                        <PixelBoard/>
-                    ) : <Navigate replace to="/login" />} />
+                    <Route path="/signup" element={!isLoggedIn ? <SignUp /> : <Navigate replace to="/homepage" />} />
+                    <Route path="/login" element={!isLoggedIn ? <LogIn /> : <Navigate replace to="/homepage" />} />
+                    <Route path="/canvasBoard" element={isLoggedIn ? <Board /> : <Navigate replace to="/login" />} />
+                    <Route path="/canvas" element={isLoggedIn ? <PixelBoard /> : <Navigate replace to="/login" />} />
+                    <Route path="/homepage" element={isLoggedIn ? <Homepage/>: <Navigate replace to="/login" />} />
                     <Route path="/" element={<Navigate replace to="/login" />} />
                     <Route path="/admin" element={<AdminPage/>}/>
                     <Route path="/admin/newpixelboard" element={<PixelBoardForm/>}/>
