@@ -7,7 +7,10 @@
 - Côté front-end :
   - Se rendre dans le dossier `front-end` (`cd front`) et lancer la commande `npm install`
   - Exécuter la commande `npm start` pour lancer le serveur sur le port 3000
-
+- Pour vous connecter :
+  - identifiants : admin
+  - mot de passe : admin
+    
 ## Fonctionnalités :
 - Home page qui contient la liste des pixelboards, le nombre de pixelboards crées en tout.
 - En cliquant sur un pixelboard, on est redirigé vers une page qui contient le pixelboard en question.
