@@ -1,8 +1,9 @@
 // components/LogIn.jsx
 import React, {useState} from 'react';
-import {TextField, Button, Container, Typography, Box} from '@mui/material';
+import {TextField, Button, Container, Typography, Box, Link} from '@mui/material';
 import setupAxiosConfig from "../../axiosConfig";
 import {useAuth} from "../../AuthContext";
+import {useNavigate} from "react-router-dom";
 
 const LogIn = () => {
     const [credentials, setCredentials] = useState({
@@ -12,6 +13,7 @@ const LogIn = () => {
     const [touched, setTouched] = useState({});
     const [errors, setErrors] = useState({});
     const { logIn } = useAuth();
+    const navigate = useNavigate();
 
     const validateField = (name, value) => {
         if (!value.trim()) {
@@ -68,6 +70,9 @@ const LogIn = () => {
         }
     };
 
+    const handleSignupLink = () => {
+        navigate("/signup", { replace: true });
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -87,6 +92,7 @@ const LogIn = () => {
                     />
                     <Button type="submit" fullWidth variant="contained" sx={{mt: 3, mb: 2}}>Log In</Button>
                 </Box>
+                <Link onClick={handleSignupLink}>You're not registered yet? Sign up!</Link>
             </Box>
         </Container>
     );

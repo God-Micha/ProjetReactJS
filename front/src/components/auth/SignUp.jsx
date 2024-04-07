@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
-import setupAxiosConfig from "../../axiosConfig";
+import {TextField, Button, Container, Typography, Box, Link} from '@mui/material';
 import {useAuth} from "../../AuthContext";
+import {useNavigate} from "react-router-dom";
 
 const SignUp = () => {
     const [user, setUser] = useState({ email: '', password: '' });
@@ -9,6 +9,7 @@ const SignUp = () => {
     const [errors, setErrors] = useState({});
 
     const { logIn } = useAuth();
+    const navigate = useNavigate();
     const validateField = (name, value) => {
         if (!value.trim()) {
             setErrors(prev => ({ ...prev, [name]: 'Ce champ est requis.' }));
@@ -55,6 +56,10 @@ const SignUp = () => {
         }
     };
 
+    const handleLoginLink = () => {
+        navigate("/login", { replace: true });
+    }
+
     return (
         <Container component="main" maxWidth="xs">
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -72,6 +77,7 @@ const SignUp = () => {
                     />
                     <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Sign Up</Button>
                 </Box>
+                <Link onClick={handleLoginLink}>Already registered? Log in!</Link>
             </Box>
         </Container>
     );

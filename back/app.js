@@ -17,9 +17,10 @@ mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopolo
 
 const gridRoutes = require('./routes/gridRoutes');
 const authRoutes = require('./routes/authRoute');
+const canvasRoutes= require('./routes/canvasRoute');
 app.use('/api/chunks', gridRoutes, );
 app.use('/api/auth', authRoutes);
-app.use('/api/canvas', require('./routes/canvasRoute'));
+app.use('/api/canvas', canvasRoutes);
 
 
 app.listen(port, () => {
