@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import {useNavigate} from "react-router-dom";
 
 const Homepage = () => {
     const api = 'http://localhost:3001/api/';
@@ -8,13 +9,14 @@ const Homepage = () => {
     const [pixelboardsCount, setPixelboardsCount] = useState(0);
     const [pixelboardsInProgress, setPixelboardsInProgress] = useState([]);
     const [pixelboardsDone, setPixelboardsDone] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         setUsersCount(1)
         setPixelboardsCount(2)
         setPixelboardsInProgress([
             {
-                id: 1,
+                _id: "660ffa6dbabfe4a3e613fd15",
                 title: "Pixel Board 1",
                 status: "In Progress",
                 creationDate: "2024-04-06",
@@ -27,7 +29,7 @@ const Homepage = () => {
         ])
         setPixelboardsDone([
             {
-                id: 2,
+                _id: "660ffa78babfe4a3e613fd18",
                 title: "Pixel Board 2",
                 status: "Done",
                 creationDate: "2024-04-01",
@@ -40,6 +42,15 @@ const Homepage = () => {
         ])
     }, []);
 
+
+
+    const redirectToPixelboard = (pixelboard) => {
+        const id = pixelboard._id;
+        return () => {
+            navigate(`/canvas`, {state: {idCanvas: id}});
+        }
+    }
+
     return (
         <>
             <h2>Collaborative drawing</h2>
@@ -47,7 +58,7 @@ const Homepage = () => {
             <p>Actuellement, {pixelboardsCount} pixelboards ont été créés.</p>
             <h3>In Progress pixelboards</h3>
             {pixelboardsInProgress.map((pixelboard) => (
-                <div className="pixel-board-card" key={pixelboard.id}>
+                <div className="pixel-board-card" key={pixelboard._id}>
                     <h4>{pixelboard.title}</h4>
                     <p>Status: {pixelboard.status}</p>
                     <p>Creation Date: {pixelboard.creationDate}</p>
@@ -56,11 +67,12 @@ const Homepage = () => {
                     <p>Creator: {pixelboard.adminUsername}</p>
                     <p>Mode: {pixelboard.mode}</p>
                     <p>Collaboration Delay: {pixelboard.collaborationDelay}s</p>
+                    <button onClick={redirectToPixelboard(pixelboard)}>See pixelboard</button>
                 </div>
             ))}
             <h3>In Progress pixelboards</h3>
             {pixelboardsDone.map((pixelboard) => (
-                <div className="pixel-board-card" key={pixelboard.id}>
+                <div className="pixel-board-card" key={pixelboard._id}>
                     <h4>{pixelboard.title}</h4>
                     <p>Status: {pixelboard.status}</p>
                     <p>Creation Date: {pixelboard.creationDate}</p>
@@ -69,6 +81,7 @@ const Homepage = () => {
                     <p>Creator: {pixelboard.adminUsername}</p>
                     <p>Mode: {pixelboard.mode}</p>
                     <p>Collaboration Delay: {pixelboard.collaborationDelay}s</p>
+                    <button onClick={redirectToPixelboard(pixelboard)}>See pixelboard</button>
                 </div>
             ))}
         </>
