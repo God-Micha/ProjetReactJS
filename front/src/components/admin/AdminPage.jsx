@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PixelBoardCard from "./PixelBoardCard";
+import PixelBoardCard from "../pixelBoard/PixelBoardCard";
 import axios from "axios";
 import { Container, Typography, Button, Grid } from "@mui/material";
 
