@@ -6,7 +6,18 @@ router.use(isAuth);
 
 router.post('/', async (req, res) => {
     try {
-        const newCanvas = new Canvas();
+        const {author, name} = req.body;
+        const creationDate = new Date();
+        let endDate = new Date(creationDate);
+        endDate.setDate(endDate.getDate() + 1);
+        const editDelay = 5;
+        const newCanvas = new Canvas({
+            author: author,
+            name: name,
+            createdAt: creationDate,
+            endDate: endDate,
+            editDelay: editDelay,
+        });
         const savedCanvas = await newCanvas.save();
         res.status(201).json(savedCanvas);
     } catch (error) {
