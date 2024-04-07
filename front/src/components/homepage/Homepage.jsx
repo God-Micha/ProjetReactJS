@@ -20,6 +20,10 @@ const Homepage = () => {
         navigate('/admin');
     }
 
+    const redirectToUserSpace = () => {
+        navigate('/userspace');
+    }
+
     useEffect(() => {
         axios.get(`${api}canvas`)
             .then(response => {
@@ -36,6 +40,11 @@ const Homepage = () => {
                 Home Page
             </Typography>
             <Grid container spacing={2} alignItems="center">
+                <Grid item>
+                    <Button variant="contained" color="primary" onClick={redirectToUserSpace}>
+                        User Space
+                    </Button>
+                </Grid>
                 <Grid item>
                     <Button variant="contained" color="primary" onClick={redirectToAdmin}>
                         Admin

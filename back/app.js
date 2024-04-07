@@ -22,7 +22,7 @@ const userInfoRoutes = require('./routes/userInfoRoute');
 app.use('/api/chunks', gridRoutes, );
 app.use('/api/auth', authRoutes);
 app.use('/api/canvas', canvasRoutes);
-app.use('api/user', userInfoRoutes);
+app.use('/api/user', userInfoRoutes);
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
