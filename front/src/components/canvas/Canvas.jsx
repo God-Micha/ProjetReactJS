@@ -13,8 +13,6 @@ const Canvas = ({ metaData, selectedColor }) => {
     const [isConnected, setIsConnected] = useState(io.connected);
     const canvasRef = useRef(null);
     const squareSize = metaData? metaData.squareSize : 10; // Définir la taille de chaque pixel
-    const canvasWidth = metaData? metaData.canvasWidth : 10;
-    const canvasHeight = metaData? metaData.canvasHeight : 10;
 
     useEffect(() => {
         const handleUpdateChunk = (data) => {
@@ -22,12 +20,23 @@ const Canvas = ({ metaData, selectedColor }) => {
                 console.error('No metadata for handling chunk update');
                 return;
             }
-            const [x, y] = data.coordinates;
             const canvas = canvasRef.current;
-            const context = canvas.current.getContext('2d');
+            if (!canvas) {
+                console.error('Canvas not available');
+                return;
+            }
+
+            const context = canvas.getContext('2d');
+            if (!context) {
+                console.error('Failed to get drawing context');
+                return;
+            }
+            const [x, y] = data.coordinates;
             console.log(`chunk ${x} ${y} has been updated`);
             drawChunk(x, y, context, squareSize, metaData)
-                .then(() => console.log('chunk updated'));
+                .then(() => console.log('chunk updated'))
+                .catch((error) => console.error('Error drawing chunk:', error));
+
         };
 
         const handleConnect = () => {
@@ -53,7 +62,7 @@ const Canvas = ({ metaData, selectedColor }) => {
             io.off('update_chunk', handleUpdateChunk);
             io.off('connect', handleConnect);
             io.off('onlineUsers', handleOnlineUsers);
-            io.on('disconnect', handleDisconnect);
+            io.off('disconnect', handleDisconnect);
         };
 
     }, []);
@@ -77,7 +86,11 @@ const Canvas = ({ metaData, selectedColor }) => {
                 drawGrid(context, metaData.canvasWidth, metaData.canvasHeight, squareSize);
             });
         }
-        io.connect();
+        if(!isConnected) {
+            io.connect();
+            setIsConnected(true);
+        }
+
     }, [metaData]);
 
     const drawChunk = async (chunkX, chunkY, context, squareSize, metaData) => {
