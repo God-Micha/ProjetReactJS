@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
         if (lastPixelAction) {
             const secondsSinceLastPixel = (currentTime.getTime() - lastPixelAction.lastPixelTime.getTime()) / 1000;
             if (secondsSinceLastPixel < canvas.editDelay) {
-                return res.status(400).json({message: `Please wait ${canvas.editDelay - secondsSinceLastPixel} more seconds before adding a new pixel.`});
+                return res.status(429).json({message: `Please wait ${canvas.editDelay - secondsSinceLastPixel} more seconds before adding a new pixel.`});
             }
         }
         if (lastPixelAction) {
@@ -94,7 +94,7 @@ router.post('/', async (req, res) => {
                 canvas: canvasId
             });
         } else {
-            chunk.pixels[posY][posX] = color;
+            chunk.pixels[posY][posX].color = color;
             chunk.updatedAt = new Date();
         }
         userInstance.numberOfPixels += 1;
