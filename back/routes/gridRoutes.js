@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Chunk = require('../models/Chunk');
 const User = require('../models/User');
+const Canvas = require('../models/Canvas');
 const isAuth = require('../middleware/isAuth');
 router.use(isAuth);
 

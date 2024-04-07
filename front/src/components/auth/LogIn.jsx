@@ -62,6 +62,7 @@ const LogIn = () => {
 
             const data = await response.json();
             localStorage.setItem('token', data.token);
+            localStorage.setItem('userId', data.userId);
             logIn();
             //props.onLoginSuccess();
         } catch (error) {

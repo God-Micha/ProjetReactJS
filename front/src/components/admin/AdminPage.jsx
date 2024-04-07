@@ -11,7 +11,6 @@ const AdminPage  = () => {
         axios.get("http://localhost:3001/api/canvas")
             .then(response => {
                 setPixelboards(response.data);
-                console.log(pixelboards)
             })
             .catch(error => {
                 console.error("Error fetching pixelboards:", error);
@@ -20,14 +19,6 @@ const AdminPage  = () => {
 
     const handleCreate = () => {
         navigate("/admin/newpixelboard", { replace: true });
-    };
-
-    const handleEdit = () => {
-        navigate("/admin/newpixelboard", { replace: true });
-    };
-
-    const handleDelete = () => {
-        console.log("delete");
     };
 
     return (
@@ -42,13 +33,9 @@ const AdminPage  = () => {
                             status={board.status}
                             creationDate={board.createdAt}
                             endDate={board.endDate}
-                            size={board.size}
-                            adminUsername={board.adminUsername}
-                            mode={board.mode}
-                            collaborationDelay={board.collaborationDelay}
+                            userId={board.creator}
+                            collaborationDelay={board.editDelay}
                         />
-                        <button type="button" onClick={handleEdit}>Edit Pixel Board</button>
-                        <button type="button" onClick={handleDelete}>Delete Pixel Board</button>
                     </div>
                 ))}
             </div>

@@ -6,12 +6,11 @@ const PixelBoardForm  = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const adminUsername = "admin";
+        const userId = localStorage.getItem("userId");
         const data = {
-            author: adminUsername,
+            creator: userId,
             name: title,
         };
-        console.log(data)
         try {
             await axios.post(`http://localhost:3001/api/canvas`, data);
         } catch (error) {

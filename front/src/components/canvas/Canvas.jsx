@@ -80,24 +80,13 @@ const Canvas = ({ metaData, selectedColor, canvasId }) => {
 
     const updateOrCreateChunk = async (x, y, color) => {
         try {
-            const response = await axios.patch(`http://localhost:3001/api/chunks}`, {
+            const postResponse = await axios.post('http://localhost:3001/api/chunks', {
                 x: x,
                 y: y,
                 color: color,
-                canvasId: canvasId
-            }, {
-                validateStatus: function (status) {
-                    return status === 404 || status === 200;
-                }
+                canvasId: canvasId,
+                userId: localStorage.getItem("userId")
             });
-            if(response.status === 404) {
-                const postResponse = await axios.post('http://localhost:3001/api/chunks', {
-                    x: x,
-                    y: y,
-                    color: color,
-                    canvasId: canvasId
-                });
-            }
         } catch (e) {
             console.error(e);
         }
