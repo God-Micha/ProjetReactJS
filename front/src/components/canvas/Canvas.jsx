@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import axios from "axios";
 import './Canvas.css';
+import {Paper} from "@mui/material";
 
 const Canvas = ({ metaData, selectedColor, canvasId }) => {
     const canvasRef = useRef(null);
@@ -100,18 +101,16 @@ const Canvas = ({ metaData, selectedColor, canvasId }) => {
         } catch (e) {
             console.error(e);
         }
-    }
-
+    };
     return (
-        <div className="canvasContainer">
+        <Paper elevation={3} className="canvasContainer"> {/* Utilisez Paper ici */}
             <canvas
                 ref={canvasRef}
                 width={metaData ? metaData.canvasWidth*squareSize * squareSize : 640} // Fallback si metaData n'est pas encore chargé
                 height={metaData ? metaData.canvasHeight * squareSize : 640} // Fallback si metaData n'est pas encore chargé
                 onClick={addPixel}
-                style={{ border: '1px solid black' }}
             />
-        </div>
+        </Paper>
     );
 };
 
