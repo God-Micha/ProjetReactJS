@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PixelBoardCard from "./PixelBoardCard";
 import axios from "axios";
+import { Container, Typography, Button, Grid } from "@mui/material";
 
-const AdminPage  = () => {
+const AdminPage = () => {
     const [pixelboards, setPixelboards] = useState([]);
     const navigate = useNavigate();
 
@@ -18,15 +19,20 @@ const AdminPage  = () => {
     }, []);
 
     const handleCreate = () => {
-        navigate("/admin/newpixelboard", { replace: true });
+        navigate("/admin/newpixelboard");
     };
 
     return (
-        <div>
-            <button type="button" onClick={handleCreate}>New Pixel Board</button>
-            <div className="pixel-board-list">
-                {pixelboards.map(board => (
-                    <div className="pixel-board-admin-card" key={board._id}>
+        <Container maxWidth="md">
+            <Typography variant="h4" component="h1" gutterBottom>
+                Admin Page
+            </Typography>
+            <Button variant="contained" color="primary" onClick={handleCreate}>
+                New Pixel Board
+            </Button>
+            <Grid container spacing={3} style={{ marginTop: '20px' }}>
+                {pixelboards.map((board) => (
+                    <Grid item xs={12} sm={6} md={4} key={board._id}>
                         <PixelBoardCard
                             id={board._id}
                             title={board.name}
@@ -36,10 +42,10 @@ const AdminPage  = () => {
                             userId={board.creator}
                             collaborationDelay={board.editDelay}
                         />
-                    </div>
+                    </Grid>
                 ))}
-            </div>
-        </div>
+            </Grid>
+        </Container>
     );
 };
 
