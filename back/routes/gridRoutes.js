@@ -88,7 +88,7 @@ router.post('/', async (req, res) => {
             );
             defaultPixels[posY][posX] = { color: color };
             chunk = new Chunk({
-                chunkId: `${chunkX}_${chunkY}`,
+                chunkId: 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9),
                 coordinates: {x: chunkX, y: chunkY},
                 pixels: defaultPixels,
                 canvas: canvasId
