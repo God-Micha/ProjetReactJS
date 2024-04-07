@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
+import PixelBoardCard from "../admin/PixelBoardCard";
+import {useAuth} from "../../AuthContext";
 
 const Homepage = () => {
     const api = 'http://localhost:3001/api/';
@@ -10,6 +12,16 @@ const Homepage = () => {
     const [pixelboardsInProgress, setPixelboardsInProgress] = useState([]);
     const [pixelboardsDone, setPixelboardsDone] = useState([]);
     const navigate = useNavigate();
+    const { logOut } = useAuth();
+
+    const disconnect = () => {
+        logOut();
+        navigate('/login');
+    }
+
+    const redirectToAdmin = () => {
+        navigate('/admin');
+    }
 
     useEffect(() => {
         setUsersCount(1)
@@ -42,47 +54,40 @@ const Homepage = () => {
         ])
     }, []);
 
-
-
-    const redirectToPixelboard = (pixelboard) => {
-        const id = pixelboard._id;
-        return () => {
-            navigate(`/canvas`, {state: {idCanvas: id}});
-        }
-    }
-
     return (
         <>
             <h2>Collaborative drawing</h2>
+            <button onClick={redirectToAdmin}>Admin</button>
+            <button onClick={disconnect}>Log Out</button>
             <p>Actuellement, {usersCount} utilisateurs se sont inscrits.</p>
             <p>Actuellement, {pixelboardsCount} pixelboards ont été créés.</p>
             <h3>In Progress pixelboards</h3>
-            {pixelboardsInProgress.map((pixelboard) => (
-                <div className="pixel-board-card" key={pixelboard._id}>
-                    <h4>{pixelboard.title}</h4>
-                    <p>Status: {pixelboard.status}</p>
-                    <p>Creation Date: {pixelboard.creationDate}</p>
-                    <p>End Date: {pixelboard.endDate}</p>
-                    <p>Size: {pixelboard.size}</p>
-                    <p>Creator: {pixelboard.adminUsername}</p>
-                    <p>Mode: {pixelboard.mode}</p>
-                    <p>Collaboration Delay: {pixelboard.collaborationDelay}s</p>
-                    <button onClick={redirectToPixelboard(pixelboard)}>See pixelboard</button>
-                </div>
+            {pixelboardsInProgress.map((board) => (
+                <PixelBoardCard  key={board._id}
+                    id={board._id}
+                    title={board.title}
+                    status={board.status}
+                    creationDate={board.creationDate}
+                    endDate={board.endDate}
+                    size={board.size}
+                    adminUsername={board.adminUsername}
+                    mode={board.mode}
+                    collaborationDelay={board.collaborationDelay}
+                />
             ))}
             <h3>In Progress pixelboards</h3>
-            {pixelboardsDone.map((pixelboard) => (
-                <div className="pixel-board-card" key={pixelboard._id}>
-                    <h4>{pixelboard.title}</h4>
-                    <p>Status: {pixelboard.status}</p>
-                    <p>Creation Date: {pixelboard.creationDate}</p>
-                    <p>End Date: {pixelboard.endDate}</p>
-                    <p>Size: {pixelboard.size}</p>
-                    <p>Creator: {pixelboard.adminUsername}</p>
-                    <p>Mode: {pixelboard.mode}</p>
-                    <p>Collaboration Delay: {pixelboard.collaborationDelay}s</p>
-                    <button onClick={redirectToPixelboard(pixelboard)}>See pixelboard</button>
-                </div>
+            {pixelboardsDone.map((board) => (
+                <PixelBoardCard key={board._id}
+                    id={board._id}
+                    title={board.title}
+                    status={board.status}
+                    creationDate={board.creationDate}
+                    endDate={board.endDate}
+                    size={board.size}
+                    adminUsername={board.adminUsername}
+                    mode={board.mode}
+                    collaborationDelay={board.collaborationDelay}
+                />
             ))}
         </>
     );
