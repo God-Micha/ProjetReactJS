@@ -8,6 +8,7 @@ import PixelBoard from "./components/pixelBoard/PixelBoard";
 import AdminPage from "./components/admin/AdminPage";
 import PixelBoardForm from "./components/pixelBoard/PixelBoardForm";
 import Homepage from './components/homepage/Homepage';
+import UserSpacePage from "./components/userspace/userSpacePage";
 
 function App() {
     const { isLoggedIn } = useAuth();
@@ -27,6 +28,7 @@ function App() {
                     <Route path="/" element={<Navigate replace to="/login" />} />
                     <Route path="/admin" element={isLoggedIn ? <AdminPage/>: <Navigate replace to="/login" />}/>
                     <Route path="/admin/newpixelboard" element={isLoggedIn ? <PixelBoardForm/>: <Navigate replace to="/login" />}/>
+                    <Route path="/userspace" element={isLoggedIn ? <UserSpacePage/>: <Navigate replace to="/login" />}/>
                 </Routes>
             </div>
         </Router>
