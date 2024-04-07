@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import axios from "axios";
 import './Canvas.css';
 
-const Canvas = ({ metaData, selectedColor }) => {
+const Canvas = ({ metaData, selectedColor, canvasId }) => {
     const canvasRef = useRef(null);
     const squareSize = metaData? metaData.squareSize : 10; // Définir la taille de chaque pixel
 
@@ -29,7 +29,7 @@ const Canvas = ({ metaData, selectedColor }) => {
 
     const drawChunk = async (chunkX, chunkY, context, squareSize, metaData) => {
         try {
-            const response = await axios.get(`http://localhost:3001/api/chunks/getChunk/${chunkX}/${chunkY}`);
+            const response = await axios.get(`http://localhost:3001/api/chunks/getChunk/${chunkX}/${chunkY}/${canvasId}`);
             const chunkData = response.data;
             chunkData.pixels.forEach((row, y) => {
                 row.forEach((pixel, x) => {
@@ -83,6 +83,7 @@ const Canvas = ({ metaData, selectedColor }) => {
                 x: x,
                 y: y,
                 color: color,
+                canvasId: canvasId
             }, {
                 validateStatus: function (status) {
                     return status === 404 || status === 200;
@@ -93,6 +94,7 @@ const Canvas = ({ metaData, selectedColor }) => {
                     x: x,
                     y: y,
                     color: color,
+                    canvasId: canvasId
                 });
             }
         } catch (e) {
