@@ -22,7 +22,7 @@ app.use('/api/chunks', gridRoutes, );
 app.use('/api/auth', authRoutes);
 app.use('/api/canvas', canvasRoutes);
 
-
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
+    console.log(`server listening at http://localhost:${port}`);
 });
