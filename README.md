@@ -32,4 +32,4 @@
 - Manque de travail d'une membre de l'équipe (participation faible, à voir si cela est dû à des problèmes personnels ou non).
 
 ## La vidéo :
-- [Lien de la vidéo](Insérer lien ICI)
+- [Lien de la vidéo](https://youtu.be/gOSvewpFbWA)
