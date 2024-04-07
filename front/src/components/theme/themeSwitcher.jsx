@@ -1,19 +1,20 @@
-import { Switch } from '@mui/material';
-import { useContext } from 'react';
-import { ThemeContext } from './themeContext'; // Assurez-vous de créer ce contexte ou de l'adapter à votre code
+// ThemeSwitcher.js
+import React, { useContext } from 'react';
+import { ThemeContext } from './themeContext';
+import Switch from '@mui/material/Switch';
 
-const ThemeSwitcher = ({ toggleTheme }) => {
-    const { theme } = useContext(ThemeContext);
+const ThemeSwitcher = () => {
+    const { currentTheme, toggleTheme } = useContext(ThemeContext);
 
     return (
         <div>
             <Switch
-                checked={theme === 'dark'}
+                checked={currentTheme === 'dark'}
                 onChange={toggleTheme}
-                name="themeSwitch"
+                inputProps={{ 'aria-label': 'toggle theme' }}
             />
         </div>
     );
 };
 
-export default ThemeSwitcher
+export default ThemeSwitcher;

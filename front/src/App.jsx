@@ -10,43 +10,23 @@ import AdminPage from "./components/admin/AdminPage";
 import PixelBoardForm from "./components/admin/PixelBoardForm";
 import Homepage from './components/homepage/Homepage';
 import CssBaseline from "@mui/material/CssBaseline";
-import {ThemeProvider} from "@mui/material";
-import {createTheme} from "@mui/material/styles";
+import {ThemeProvider} from "./components/theme/themeContext";
 import ThemeSwitcher from "./components/theme/themeSwitcher";
 
 
-const lightTheme = createTheme({
-    palette: {
-        mode: 'light',
-    },
-});
-
-const darkTheme = createTheme({
-    palette: {
-        mode: 'dark',
-    },
-});
-
 function App() {
     const { isLoggedIn } = useAuth();
-    const [theme, setTheme] = useState('light');
-
-    const toggleTheme = () => {
-        setTheme(theme === 'light' ? 'dark' : 'light');
-    };
-
-    const appliedTheme = theme === 'light' ? lightTheme : darkTheme;
 
     useEffect(() => {
         setupAxiosConfig();
     }, []);
 
     return (
-        <ThemeProvider theme={appliedTheme}>
+        <ThemeProvider>
             <CssBaseline />
             <Router>
                 <div className="App">
-                    <ThemeSwitcher toggleTheme={toggleTheme} />
+                    <ThemeSwitcher />
                     <Routes>
                         <Route path="/signup" element={!isLoggedIn ? <SignUp /> : <Navigate replace to="/homepage" />} />
                         <Route path="/login" element={!isLoggedIn ? <LogIn /> : <Navigate replace to="/homepage" />} />
