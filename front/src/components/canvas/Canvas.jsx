@@ -1,7 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import axios from "axios";
+import './Canvas.css';
+import {Paper} from "@mui/material";
 
-const Canvas = ({ metaData, selectedColor }) => {
+const Canvas = ({ metaData, selectedColor, canvasId }) => {
     const canvasRef = useRef(null);
     const squareSize = metaData? metaData.squareSize : 10; // Définir la taille de chaque pixel
 
@@ -28,7 +30,7 @@ const Canvas = ({ metaData, selectedColor }) => {
 
     const drawChunk = async (chunkX, chunkY, context, squareSize, metaData) => {
         try {
-            const response = await axios.get(`http://localhost:3001/api/chunks/getChunk/${chunkX}/${chunkY}`);
+            const response = await axios.get(`http://localhost:3001/api/chunks/getChunk/${chunkX}/${chunkY}/${canvasId}`);
             const chunkData = response.data;
             chunkData.pixels.forEach((row, y) => {
                 row.forEach((pixel, x) => {
@@ -78,35 +80,26 @@ const Canvas = ({ metaData, selectedColor }) => {
 
     const updateOrCreateChunk = async (x, y, color) => {
         try {
-            const response = await axios.patch(`http://localhost:3001/api/chunks}`, {
+            const postResponse = await axios.post('http://localhost:3001/api/chunks', {
                 x: x,
                 y: y,
                 color: color,
-            }, {
-                validateStatus: function (status) {
-                    return status === 404 || status === 200;
-                }
+                canvasId: canvasId,
+                userId: localStorage.getItem("userId")
             });
-            if(response.status === 404) {
-                const postResponse = await axios.post('http://localhost:3001/api/chunks', {
-                    x: x,
-                    y: y,
-                    color: color,
-                });
-            }
         } catch (e) {
             console.error(e);
         }
-    }
-
+    };
     return (
-        <canvas
-            ref={canvasRef}
-            width={metaData ? metaData.canvasWidth*squareSize * squareSize : 640} // Fallback si metaData n'est pas encore chargé
-            height={metaData ? metaData.canvasHeight * squareSize : 640} // Fallback si metaData n'est pas encore chargé
-            onClick={addPixel}
-            style={{ border: '1px solid black' }}
-        />
+        <Paper elevation={3} className="canvasContainer"> {/* Utilisez Paper ici */}
+            <canvas
+                ref={canvasRef}
+                width={metaData ? metaData.canvasWidth*squareSize * squareSize : 640} // Fallback si metaData n'est pas encore chargé
+                height={metaData ? metaData.canvasHeight * squareSize : 640} // Fallback si metaData n'est pas encore chargé
+                onClick={addPixel}
+            />
+        </Paper>
     );
 };
 

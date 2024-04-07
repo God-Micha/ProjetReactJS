@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
+
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -15,8 +16,15 @@ mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopolo
     .catch((err) => {console.log('Error connecting to MongoDB', err)});
 
 const gridRoutes = require('./routes/gridRoutes');
-app.use('/api/chunks', gridRoutes);
+const authRoutes = require('./routes/authRoute');
+const canvasRoutes= require('./routes/canvasRoute');
+const userInfoRoutes = require('./routes/userInfoRoute');
+app.use('/api/chunks', gridRoutes, );
+app.use('/api/auth', authRoutes);
+app.use('/api/canvas', canvasRoutes);
+app.use('/api/user', userInfoRoutes);
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
+    console.log(`server listening at http://localhost:${port}`);
 });
