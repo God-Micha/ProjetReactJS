@@ -1,7 +1,19 @@
-.pixelBoardContainer{
-   display: flex;
+.pixelBoard{
+    width: 100%;
+    min-width: 100vh;
+    height: 100%;
+    padding: 0 !important;
+}
+.pixelBoardContainer {
+    display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
+    justify-content: space-evenly;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    padding: 20px;
+}
+
+.pixelBoardActions {
+    margin-bottom: 20px;
 }

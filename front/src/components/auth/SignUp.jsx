@@ -49,6 +49,7 @@ const SignUp = () => {
             const data = await response.json();
             console.log(data);
             localStorage.setItem('token', data.token);
+            localStorage.setItem('userId', data.userId);
             logIn();
         } catch (error) {
             console.error('Error:', error);

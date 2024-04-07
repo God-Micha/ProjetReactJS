@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import axios from "axios";
 import './Canvas.css';
+import {Paper} from "@mui/material";
 
 const Canvas = ({ metaData, selectedColor, canvasId }) => {
     const canvasRef = useRef(null);
@@ -79,39 +80,26 @@ const Canvas = ({ metaData, selectedColor, canvasId }) => {
 
     const updateOrCreateChunk = async (x, y, color) => {
         try {
-            const response = await axios.patch(`http://localhost:3001/api/chunks}`, {
+            const postResponse = await axios.post('http://localhost:3001/api/chunks', {
                 x: x,
                 y: y,
                 color: color,
-                canvasId: canvasId
-            }, {
-                validateStatus: function (status) {
-                    return status === 404 || status === 200;
-                }
+                canvasId: canvasId,
+                userId: localStorage.getItem("userId")
             });
-            if(response.status === 404) {
-                const postResponse = await axios.post('http://localhost:3001/api/chunks', {
-                    x: x,
-                    y: y,
-                    color: color,
-                    canvasId: canvasId
-                });
-            }
         } catch (e) {
             console.error(e);
         }
-    }
-
+    };
     return (
-        <div className="canvasContainer">
+        <Paper elevation={3} className="canvasContainer"> {/* Utilisez Paper ici */}
             <canvas
                 ref={canvasRef}
                 width={metaData ? metaData.canvasWidth*squareSize * squareSize : 640} // Fallback si metaData n'est pas encore chargé
                 height={metaData ? metaData.canvasHeight * squareSize : 640} // Fallback si metaData n'est pas encore chargé
                 onClick={addPixel}
-                style={{ border: '1px solid black' }}
             />
-        </div>
+        </Paper>
     );
 };
 

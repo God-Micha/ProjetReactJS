@@ -1,12 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const Canvas = require('../models/canvas');
+const Canvas = require('../models/Canvas');
 const isAuth = require('../middleware/isAuth');
 router.use(isAuth);
 
 router.post('/', async (req, res) => {
     try {
-        const newCanvas = new Canvas();
+        const {creator, name} = req.body;
+        const creationDate = new Date();
+        let endDate = new Date(creationDate);
+        endDate.setDate(endDate.getDate() + 1);
+        const editDelay = 5;
+        const newCanvas = new Canvas({
+            creator: creator,
+            name: name,
+            createdAt: creationDate,
+            endDate: endDate,
+            editDelay: editDelay,
+        });
         const savedCanvas = await newCanvas.save();
         res.status(201).json(savedCanvas);
     } catch (error) {
